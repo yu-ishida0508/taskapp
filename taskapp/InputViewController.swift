@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import UserNotifications    // 追加
 
 class InputViewController: UIViewController {
     @IBOutlet weak var titleTextField: UITextField!
@@ -37,16 +38,16 @@ class InputViewController: UIViewController {
         view.endEditing(true)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        
-        try!realm.write{
+    override func viewWillDisappear(_ animated: Bool) {
+        try! realm.write {
             self.task.title = self.titleTextField.text!
             self.task.contents = self.contentsTextView.text
             self.task.date = self.datePicker.date
-            self.realm.add(self.task,update:.modified)
+            self.realm.add(self.task, update: .modified)
         }
- 
- 
+        
+        //setNotificationは時間になったら表示
+        setNotification(task: task)   // 追加
         super.viewWillDisappear(animated)
     }
     // タスクのローカル通知を登録する
@@ -76,6 +77,9 @@ class InputViewController: UIViewController {
         // ローカル通知を登録
         let center = UNUserNotificationCenter.current()
         center.add(request){(error) in print(error ?? "ローカル通知登録 OK")
+            //→上記の元のクロージャ(error:Error?) -> Void in print(error ?? "ローカル通知登録 OK")
+            
+            
             // error が nil ならローカル通知の登録に成功したと表示します。errorが存在すればerrorを表示します。
             
             // 未通知のローカル通知一覧をログ出力

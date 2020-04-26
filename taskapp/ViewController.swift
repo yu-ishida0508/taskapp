@@ -82,9 +82,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     }
     // 各セルを選択した時に実行されるメソッド
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "cellSegue", sender: nil)
-        
+        performSegue(withIdentifier: "cellSegue",sender: nil) // ←追加する
     }
+    
     // セルが削除が可能なことを伝えるメソッド
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .delete
