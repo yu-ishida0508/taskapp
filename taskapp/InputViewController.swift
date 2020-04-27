@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 import UserNotifications    // 追加
 
-class InputViewController: UIViewController {
+class InputViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDataSource {
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentsTextView: UITextView!
     @IBOutlet weak var datePicker: UIDatePicker!
@@ -19,10 +19,28 @@ class InputViewController: UIViewController {
     
     let realm = try!Realm()
     var task :Task!
+    var pickerView: UIPickerView = UIPickerView()
+    let categoryList:[String] = ["その他","一般","至急"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+//カテゴリ
+        // ピッカー設定
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        //pickerView.showsSelectionIndicator = true
+        
+        // 決定バーの生成
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 35))
+        let spacelItem = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        let doneItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        toolbar.setItems([spacelItem, doneItem], animated: true)
+        
+        // インプットビュー設定
+        categoryTextField.inputView = pickerView
+        categoryTextField.inputAccessoryView = toolbar
+//カテゴリ
+        
         // Do any additional setup after loading the view.
         // 背景をタップしたらdismissKeyboardメソッドを呼ぶように設定する
         let tapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(dismissKeyboard))
@@ -34,6 +52,13 @@ class InputViewController: UIViewController {
         categoryTextField.text = task.category
       
     }
+//カテゴリ開始
+    // 決定ボタン押下
+    @objc func done() {
+        categoryTextField.endEditing(true)
+        categoryTextField.text = "\(categoryList[pickerView.selectedRow(inComponent: 0)])"
+    }
+//カテゴリ終了
     
     @objc func dismissKeyboard(){
         //キーボードを閉じる
@@ -111,3 +136,43 @@ class InputViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    /*
+    // ドラムロール選択時
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.textField.text = list[row]
+    }
+     */
+
+extension InputViewController {
+// ドラムロールの列数
+ func numberOfComponents(in pickerView: UIPickerView) -> Int {
+     return 1
+ }
+ 
+ // ドラムロールの行数
+ func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+     /*
+      列が複数ある場合は
+      if component == 0 {
+      } else {
+      ...
+      }
+      こんな感じで分岐が可能
+      */
+     return categoryList.count
+ }
+ 
+ // ドラムロールの各タイトル
+ func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+     /*
+      列が複数ある場合は
+      if component == 0 {
+      } else {
+      ...
+      }
+      こんな感じで分岐が可能
+      */
+     return categoryList[row]
+ }
+}
