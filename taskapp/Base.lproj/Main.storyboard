@@ -110,6 +110,19 @@
                                     <constraint firstAttribute="height" constant="120" id="BeL-9u-V3H"/>
                                 </constraints>
                             </datePicker>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="カテゴリ" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="trB-Ns-aIe">
+                                <rect key="frame" x="122" y="527" width="70" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QH6-Wy-SbH">
+                                <rect key="frame" x="109" y="573" width="97" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -133,6 +146,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="Cub-3t-bvQ"/>
                     <connections>
+                        <outlet property="categoryTextField" destination="QH6-Wy-SbH" id="m0G-ne-jjs"/>
                         <outlet property="contentsTextView" destination="Lo7-fU-M08" id="5hS-ox-uvZ"/>
                         <outlet property="datePicker" destination="1nm-1t-CUh" id="80O-fI-f4X"/>
                         <outlet property="titleTextField" destination="Poa-mo-Vgp" id="VFn-ki-FKG"/>

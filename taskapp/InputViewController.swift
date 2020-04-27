@@ -14,6 +14,7 @@ class InputViewController: UIViewController {
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentsTextView: UITextView!
     @IBOutlet weak var datePicker: UIDatePicker!
+    @IBOutlet weak var categoryTextField: UITextField!
     
     
     let realm = try!Realm()
@@ -30,6 +31,7 @@ class InputViewController: UIViewController {
         titleTextField.text = task.title
         contentsTextView.text = task.contents
         datePicker.date = task.date
+        categoryTextField.text = task.category
       
     }
     
@@ -43,6 +45,8 @@ class InputViewController: UIViewController {
             self.task.title = self.titleTextField.text!
             self.task.contents = self.contentsTextView.text
             self.task.date = self.datePicker.date
+            self.task.category = self.categoryTextField.text!
+            
             self.realm.add(self.task, update: .modified)
         }
         
@@ -64,6 +68,8 @@ class InputViewController: UIViewController {
         }else{
             content.body = task.contents
         }
+        
+        
         content.sound = UNNotificationSound.default
         
         // ローカル通知が発動するtrigger（日付マッチ）を作成
