@@ -10,7 +10,8 @@ import UIKit
 import RealmSwift
 import UserNotifications    // 追加
 
-class InputViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDataSource {
+class InputViewController: UIViewController {
+//配列を利用する場合は、UIPickerViewDelegate, UIPickerViewDataSourceプロトコル追加
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentsTextView: UITextView!
     @IBOutlet weak var datePicker: UIDatePicker!
@@ -19,11 +20,15 @@ class InputViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDa
     
     let realm = try!Realm()
     var task :Task!
+
+/* categoryを配列
     var pickerView: UIPickerView = UIPickerView()
     let categoryList:[String] = ["その他","一般","至急"]
-    
+*/
     override func viewDidLoad() {
         super.viewDidLoad()
+// MARK: -　ドラムロール作成用のピッカー関連の設定(必須)
+/*
 //カテゴリ
         // ピッカー設定
         pickerView.delegate = self
@@ -46,12 +51,17 @@ class InputViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDa
         let tapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(dismissKeyboard))
         self.view.addGestureRecognizer(tapGesture)
 
-        titleTextField.text = task.title
-        contentsTextView.text = task.contents
-        datePicker.date = task.date
-        categoryTextField.text = task.category
+       
       
     }
+*/
+               titleTextField.text = task.title
+               contentsTextView.text = task.contents
+               datePicker.date = task.date
+               categoryTextField.text = task.category
+}//viewDidLoad()終了
+    
+/*
 //カテゴリ開始
     // 決定ボタン押下
     @objc func done() {
@@ -59,11 +69,15 @@ class InputViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDa
         categoryTextField.text = "\(categoryList[pickerView.selectedRow(inComponent: 0)])"
     }
 //カテゴリ終了
-    
+*/
+// MARK: -　背景タップでdismissKeyboard()の呼び出し
+
     @objc func dismissKeyboard(){
         //キーボードを閉じる
         view.endEditing(true)
     }
+    
+// MARK: -　遷移する際に、画面が非表示になるとき呼ばれるメソッド
     
     override func viewWillDisappear(_ animated: Bool) {
         try! realm.write {
@@ -79,6 +93,9 @@ class InputViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDa
         setNotification(task: task)   // 追加
         super.viewWillDisappear(animated)
     }
+
+// MARK: -　タスクのローカル通知の設定
+    
     // タスクのローカル通知を登録する
     func setNotification(task: Task){
         let content = UNMutableNotificationContent()
@@ -137,13 +154,16 @@ class InputViewController: UIViewController,UIPickerViewDelegate, UIPickerViewDa
     }
     */
     
-    /*
-    // ドラムロール選択時
+/*
+    // ドラムロール選択時 ...いらないかも
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.textField.text = list[row]
     }
-     */
+*/
 
+// MARK: -　ドラムロール作成時のextension（必須）
+
+/*
 extension InputViewController {
 // ドラムロールの列数
  func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -176,3 +196,5 @@ extension InputViewController {
      return categoryList[row]
  }
 }
+
+ */

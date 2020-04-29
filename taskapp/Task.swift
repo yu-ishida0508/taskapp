@@ -6,6 +6,8 @@
 //  Copyright © 2020 yuu.ishida. All rights reserved.
 //
 
+
+//モデルクラス
 import RealmSwift
 
 class Task: Object {
@@ -22,7 +24,7 @@ class Task: Object {
     @objc dynamic var date = Date()
     
     // カテゴリ
-    @objc dynamic var category: String = ""
+    @objc dynamic var category:String = ""
 
     // id をプライマリーキーとして設定
     override static func primaryKey() -> String? {
