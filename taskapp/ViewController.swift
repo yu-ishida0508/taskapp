@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift   // ←追加
+import PKHUD
 
 class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate {
 
@@ -32,8 +33,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 
             self.taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)
             if searchBar.text! != ""{
-               // リストを全消去する
-//            self.taskArray = nil
             
                // 検索文字列を生成する
                let searchText = searchBar.text!
@@ -51,25 +50,16 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         }
            return true
     }
-// MARK: -
-    // 検索バーに入力に何もなくなった時（バツ）
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    if searchText.isEmpty {
-        //DispatchQueue.main.asyncAfter記述後の処理は0.2秒後に実行
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        //TableView再読込み・再描画用メソッド
-        self.TableViewReload()
-        }
-        }
-    }
 
-// MARK: -　検索バー設定
+
+// MARK: -　検索バー表示設定
 
     // 検索バー編集開始時にキャンセルボタン有効化
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar){
-        //キャンセルボタンのう有効化とアニメーション
+        //キャンセルボタンの有効化とアニメーション
         addSearchBar.setShowsCancelButton(true, animated: true)
     }
+// MARK: -
     // キャンセルボタンでキャセルボタン非表示
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -81,57 +71,33 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         self.TableViewReload()
         }
     }
-
-    
-    
-/*
-     //Cancelボタン押下時の処理
-     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-         //検索文字削除
-         addSearchBar.text! = ""
-     }
-    //Cancelボタン押下時の処理
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //検索文字削除
-        addSearchBar.text = ""
-    }
-
-    
-    //渡された文字列を含む要素を検索し、テーブルビューを再表示する
-    func searchItems(searchText: String){
-      //要素を検索する
-    if addSearchBar.text == "" {
-        let task = taskArray[indexPath.row]
-          // cell.textLabel?.text = task.title
-             cell.mytextLabel?.text = task.title
-             cell.myCustomLabel?.text = task.category
-
-       
-        }else{
-        
-        taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)  // ←追加
-                       
-                     //  let task = subtaskArray[indexPath.row]
-                      //  cell.textLabel?.text = task.title
-                       //filter関数による配列の条件抽出
-                     //  taskArray = subtaskArray.filter({ $0 == (task.title = "一般")})
-            //渡された文字列が空の場合は全て表示
-            //searchResult = items
+// MARK: -
+    // 検索バーに入力に何もなくなった時（バツ押下時）
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    if searchText.isEmpty {
+        //DispatchQueue.main.asyncAfter記述後の処理は0.2秒後に実行
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        //TableView再読込み・再描画用メソッド
+        self.TableViewReload()
         }
-     } //searchItemsメソッド終了
-*/
-
-// MARK: -　遷移元→遷移先（segue）
+        }
+    }
+// MARK: -　遷移先→遷移元
+    
     // 入力画面から戻ってきた時に TableView を更新させる
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    //PKHUDライブラリの取込みで実装
+    HUD.flash(.labeledProgress(title: "更新中", subtitle: "お待ち下さい"), delay: 1.5)
         tableView.reloadData()
     }
     
+// MARK: -　遷移元→遷移先（segue）
     // segue で画面遷移(遷移元→遷移先)する時に呼ばれる
     override func prepare(for segue: UIStoryboardSegue, sender: Any?){
         let inputViewController:InputViewController = segue.destination as! InputViewController
         
+        //"cellSegue"cellタップ時のsegue
         if segue.identifier == "cellSegue" {
             let indexPath = self.tableView.indexPathForSelectedRow
             inputViewController.task = taskArray[indexPath!.row]
@@ -147,17 +113,18 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         }
     }
     
-// MARK: -　RealmDB内のタスク格納
-    //Realmインスタンスを取得する
-    let realm = try! Realm()  // ←追加
+// MARK: -　ライブラリRealm　<DB内のタスク格納>
+    
+    //Realmインスタンス取得
+    let realm = try! Realm()
     
     //DB内のタスクが格納されるリスト
     //日付の近い順でソート：昇順
     //以降内容をアップデートするとリスト内は自動的に更新される
     //object:レルムに格納されている指定されたタイプのすべてのオブジェクトを返します。
-    var taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)  // ←追加
+    var taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)
 
-// MARK: -　TableView読み込み時の前処理
+// MARK: -　TableView読み込み時の前処理 <delegate>
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -165,12 +132,13 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         tableView.delegate = self
         addSearchBar.delegate = self
     }
-// MARK: -　UITableViewDataSourceプロトコル必須メソッド(画面が切り変わる都度読み込み)
+// MARK: -　UITableViewDataSourceプロトコル必須メソッド① <画面切変え、更新の都度読み込み>
+
     // データの数（＝セルの数）を返すメソッド
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return taskArray.count //return 0 →修正
     }
-
+// MARK: -　UITableViewDataSourceプロトコル必須メソッド② <画面切変え、更新の都度読み込み>
     // 各セルの内容を返す(テーブル内の1つ1つの行に対して、どんな内容を表示するかを返す)メソッド
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
        // Fetch a cell of the appropriate type.
@@ -179,7 +147,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         //『as! CustomTableViewCell』カスタムセルを呼び出す際に必須
         
 // MARK:　-
-    // Cellに値を設定する.  --- ここから ---
+    // Cellに値を設定する.
     //行番号→[indexPath.row]における、taskArray配列を指す
       let task = taskArray[indexPath.row]
    // cell.textLabel?.text = task.title
@@ -187,25 +155,20 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
       cell.myCustomLabel?.text = task.category
         
 
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd HH:mm"
+      let formatter = DateFormatter()
+      formatter.dateFormat = "yyyy-MM-dd HH:mm"
 
-    let dateString:String = formatter.string(from: task.date)
+      let dateString:String = formatter.string(from: task.date)
     //cell.detailTextLabel?.text = dateString
       cell.mydetailLabel?.text = dateString
-    // --- ここまで追加 ---
-
-       // Configure the cell’s contents.
-       //cell.textLabel!.text = "Cell text"
-           
-       return cell
+      return cell
     }
     
-// MARK: -　各セル(遷移元)に対する実行メソッド
+// MARK: -　各セルに対する実行メソッド
     
     // 各セルを選択した時に実行されるメソッド
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "cellSegue",sender: nil) // ←追加する
+        performSegue(withIdentifier: "cellSegue",sender: nil)
     }
     
     // セルが削除が可能なことを伝えるメソッド
@@ -216,7 +179,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     // Delete ボタンが押された時に呼ばれるメソッド
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
     
-    // --- ここから ---
     if editingStyle == .delete {
         // 削除するタスクを取得する
         let task = self.taskArray[indexPath.row]
@@ -239,6 +201,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                 print("---------------/")
             }
         }
-    } // --- ここまで変更 ---
-        }
+    }
+        
+    }
 }

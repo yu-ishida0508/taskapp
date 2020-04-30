@@ -21,10 +21,12 @@ class InputViewController: UIViewController {
     let realm = try!Realm()
     var task :Task!
 
+// MARK: -　ドラムロール作成用の配列(必須)
 /* categoryを配列
     var pickerView: UIPickerView = UIPickerView()
     let categoryList:[String] = ["その他","一般","至急"]
 */
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 // MARK: -　ドラムロール作成用のピッカー関連の設定(必須)
